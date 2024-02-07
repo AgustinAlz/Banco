@@ -7,6 +7,6 @@ router.get("/roles", getRoles);
 router.post("/roles/create", createRole);
 router.get("/roles/:id", getRole);
 router.put("/roles/:id", updateRole);
-router.delete("roles/:id", deleteRole);
+router.delete("/roles/:id", deleteRole);
 
 export default router;

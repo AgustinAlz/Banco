@@ -2,8 +2,23 @@ import User from "../models/user.model.js";
 
 export const getUsers = async (req, res) => {
     try {
-        const users = await User.find({ role: req.role.id }).populate("role");
+        //console.log(req);
+        //res.json(req);
+        const users = await User.find().populate("role");
         res.json(users);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+export const getUser = async (req, res) => {
+    try {
+        const user = await User.findById({"_id": req.params.id});
+        await user.populate("role");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.json(user);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -47,18 +62,6 @@ export const updateUser = async (req, res) => {
             { new: true }
         );
         return res.json(userUpdated);
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-};
-
-export const getUser = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        return res.json(user);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

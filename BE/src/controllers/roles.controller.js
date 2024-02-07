@@ -9,11 +9,23 @@ export const getRoles = async (req, res) => {
     }
 };
 
+export const getRole = async (req, res) => {
+    try {
+        const role = await Role.findById(req.params.id);
+        if (!role) {
+            return res.status(404).json({ message: "Role not found" });
+        }
+        return res.json(role);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 export const createRole = async (req, res) => {
     try {
-        const { roleName, adminPermission } = req.body;
+        const { description, adminPermission } = req.body;
         const newRole = new Role({
-            roleName,
+            description,
             adminPermission
         });
         await newRole.save();
@@ -37,25 +49,13 @@ export const deleteRole = async (req, res) => {
 
 export const updateRole = async (req, res) => {
     try {
-        const { roleName, adminPermission } = req.body;
+        const { description, adminPermission } = req.body;
         const roleUpdated = await Role.findOneAndUpdate(
             { _id: req.params.id },
-            { roleName, adminPermission  },
+            { description, adminPermission  },
             { new: true }
         );
         return res.json(roleUpdated);
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-};
-
-export const getRole = async (req, res) => {
-    try {
-        const role = await Role.findById(req.params.id);
-        if (!role) {
-            return res.status(404).json({ message: "Role not found" });
-        }
-        return res.json(role);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
