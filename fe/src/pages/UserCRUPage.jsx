@@ -51,7 +51,6 @@ export function UserCRUPage() {
 
     const onFinish = async (values) => {
         try {
-            console.log(user);
             if (user.editing) {
                 await updateUserRequest(user);
             } else {

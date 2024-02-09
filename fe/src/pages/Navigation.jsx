@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Menu } from 'antd';
+import { Modal, Menu, Flex } from 'antd';
 import { FileTextOutlined, FileAddOutlined, UserAddOutlined, StopOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
@@ -10,7 +10,6 @@ export function Navigation() {
     const navigate = useNavigate();
     const location = useLocation();
     const { isAuthenticated, logout, user } = useAuth();
-    console.log("Autenticado?", isAuthenticated, "Usuario", user)
 
     useEffect(() => {
         if (location) {
@@ -69,7 +68,6 @@ export function Navigation() {
                 setOpen(true);
                 break;
             case "/logout":
-                console.log("Logout");
                 logout();
                 navigate("/login");;
                 break;
@@ -80,7 +78,10 @@ export function Navigation() {
         <>
             {isAuthenticated ? (
                 <>
-                    <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuOptions} />
+                    <Flex gap="middle" vertical={false}>
+                        <p>{user.givenName + " " + user.lastName}</p>
+                        <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuOptions} />
+                    </Flex>
                     <Modal
                         title="Never Gonna Give You App"
                         centered

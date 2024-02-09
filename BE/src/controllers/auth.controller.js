@@ -6,11 +6,8 @@ import { createAccessToken } from "../libs/jwt.js";
 
 export const login = async (req, res) => {
   try {
-    console.log("req.body",req.body)
     const { email, password } = req.body;
-    
-    console.log("Email",email,"pasword",password)
-    const userFound = await User.findOne({ email });
+    const userFound = await User.findOne({ email }).populate("role");
 
     if (!userFound)
       return res.status(400).json({
@@ -18,9 +15,7 @@ export const login = async (req, res) => {
       });
 
     const isMatch = await bcrypt.compare(password, userFound.password);
-    console.log("contrasña desencriptada",bcrypt.decodeBase64(password, 10));
     if (!isMatch) {
-      console.log("Password ingresada:",password,"Password encontrada:", userFound.password);
       return res.status(400).json({
         message: ["The password is incorrect"],
       });
@@ -28,6 +23,8 @@ export const login = async (req, res) => {
 
     const token = await createAccessToken({
       id: userFound._id,
+      givenName: userFound.givenName,
+      lastName: userFound.lastName,
       email: userFound.email,
       role: userFound.role
     });
@@ -40,6 +37,8 @@ export const login = async (req, res) => {
 
     res.json({
       id: userFound._id,
+      givenName: userFound.givenName,
+      lastName: userFound.lastName,
       email: userFound.email,
       role: userFound.role
     });
@@ -60,6 +59,8 @@ export const verifyToken = async (req, res) => {
 
     return res.json({
       id: userFound._id,
+      givenName: userFound.givenName,
+      lastName: userFound.lastName,
       email: userFound.email,
       role: userFound.role
     });

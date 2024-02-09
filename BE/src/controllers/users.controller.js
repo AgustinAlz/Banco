@@ -3,8 +3,6 @@ import bcrypt from "bcryptjs";
 
 export const getUsers = async (req, res) => {
     try {
-        //console.log(req);
-        //res.json(req);
         const users = await User.find().populate("role");
         res.json(users);
     } catch (error) {
@@ -28,7 +26,6 @@ export const getUser = async (req, res) => {
 export const createUser = async (req, res) => {
     try {
         const { givenName, lastName, email, role, password } = req.body;
-
         const newUser = new User({
             givenName,
             lastName,
@@ -37,7 +34,6 @@ export const createUser = async (req, res) => {
             password: await bcrypt.hash(password, 10) // hashing the password
         });
         await newUser.save();
-        console.log(newUser);
         res.json(newUser);
     } catch (error) {
         return res.status(500).json({ message: error.message });

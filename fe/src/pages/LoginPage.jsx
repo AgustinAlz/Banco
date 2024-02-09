@@ -13,7 +13,6 @@ export function LoginPage() {
     const { signin, errors: loginErrors, isAuthenticated } = useAuth();
 
     const onSubmit = async (values) => {
-        console.log('Success:', values);
         await signin(values);
         navigate("/users");
     };

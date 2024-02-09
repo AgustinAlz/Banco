@@ -28,9 +28,9 @@ export const AuthProvider = ({ children }) => {
   }, [errors]);
 
 
-  const signin = async (user) => {
+  const signin = async (u) => {
     try {
-      const res = await loginRequest(user);
+      const res = await loginRequest(u);
       setUser(res.data);
       setIsAuthenticated(true);
     } catch (error) {
@@ -56,7 +56,6 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const res = await verifyTokenRequest(cookies.token);
-        console.log(res);
         if (!res.data) return setIsAuthenticated(false);
         setIsAuthenticated(true);
         setUser(res.data);
