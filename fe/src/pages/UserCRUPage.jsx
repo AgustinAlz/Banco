@@ -21,6 +21,7 @@ export function UserCRUPage() {
     );
     const navigate = useNavigate();
     const [form] = Form.useForm();
+    const [resetPassword, setResetPassword] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -36,18 +37,17 @@ export function UserCRUPage() {
                     lastName: res.data.lastName,
                     email: res.data.email,
                     role: res.data.role,
-                    password: res.data.password,
+                    password: "",
                     editing: true
                 });
             }
-
         }
         fetchData();
         form.resetFields()
         form.setFieldsValue({
             givenName: user.givenName
         });
-    }, [form, user.editing]);
+    }, [form, user.editing, resetPassword]);
 
     const onFinish = async (values) => {
         try {
@@ -81,6 +81,12 @@ export function UserCRUPage() {
         });
     };
 
+    const doResetPassword = (e) => {
+        console.log("Paso por aca");
+        setResetPassword(true);
+    };
+    
+
     const cancel = async () => {
         navigate("/users");
     }
@@ -89,39 +95,39 @@ export function UserCRUPage() {
         <>
             <Form layout="vertical" form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
                 <Form.Item label="Nombre" name="givenName" placeholder="Nombre" initialValue={user.givenName} rules={[
-                        {
-                            required: true,
-                            message: 'Por favor ingresar nombre.',
-                        },
-                    ]}
-                    
+                    {
+                        required: true,
+                        message: 'Por favor ingresar nombre.',
+                    },
+                ]}
+
                 >
                     <Input name="givenName" onChange={handleChange} />
                 </Form.Item>
                 <Form.Item label="Apellido" name="lastName" placeholder="Apellido" initialValue={user.lastName} rules={[
-                        {
-                            required: true,
-                            message: 'Por favor ingresar apellido.',
-                        },
-                    ]}                    
+                    {
+                        required: true,
+                        message: 'Por favor ingresar apellido.',
+                    },
+                ]}
                 >
                     <Input name="lastName" onChange={handleChange} />
                 </Form.Item>
                 <Form.Item label="Correo Electrónico" name="email" initialValue={user.email} rules={[
-                        {
-                            required: true,
-                            message: 'Por favor ingresar correo electrónico.',
-                        },
-                    ]}                    
+                    {
+                        required: true,
+                        message: 'Por favor ingresar correo electrónico.',
+                    },
+                ]}
                 >
                     <Input name="email" onChange={handleChange} />
                 </Form.Item>
                 <Form.Item name="role" label="Rol" initialValue={user.role.description} rules={[
-                        {
-                            required: true,
-                            message: 'Por favor seleccionar un rol.',
-                        },
-                    ]}                    
+                    {
+                        required: true,
+                        message: 'Por favor seleccionar un rol.',
+                    },
+                ]}
                 >
                     <Select placeholder="Seleccionar un rol" onChange={handle_select_role}>
                         {roles.map((role) => {
@@ -133,15 +139,23 @@ export function UserCRUPage() {
                         })}
                     </Select>
                 </Form.Item>
-                <Form.Item label="Contraseña" name="password" hasFeedback initialValue={user.password} rules={[
-                        {
-                            required: true,
-                            message: 'Por favor ingresar una contraseña.',
-                        },
-                    ]}
-                >
-                    <Input.Password name="password" onChange={handleChange} />
-                </Form.Item>
+                {( resetPassword || !user.editing) ? (
+                    <>
+                        <Form.Item label="Contraseña" name="password" hasFeedback initialValue={user.password} rules={[
+                            {
+                                required: true,
+                                message: 'Por favor ingresar una contraseña.',
+                            },
+                        ]}
+                        >
+                            <Input.Password name="password" onChange={handleChange} />
+                        </Form.Item>
+                    </>
+                ) : (
+                    <Form.Item>
+                        <Button onClick={doResetPassword}>Reset Contraseña</Button>
+                    </Form.Item>
+                )}
                 <Form.Item>
                     <Button type="primary" htmlType="submit">
                         Guardar

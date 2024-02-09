@@ -10,7 +10,7 @@ export function Navigation() {
     const navigate = useNavigate();
     const location = useLocation();
     const { isAuthenticated, logout, user } = useAuth();
-    console.log("Autenticado?",isAuthenticated,"Usuario",user)
+    console.log("Autenticado?", isAuthenticated, "Usuario", user)
 
     useEffect(() => {
         if (location) {
@@ -28,8 +28,8 @@ export function Navigation() {
     }
     const menuOptions = [
         {
-            label: "Lista de Nota",
-            key: "/",
+            label: "Lista de Usuarios",
+            key: "/users",
             icon: <FileTextOutlined />
         },
         {
@@ -46,13 +46,18 @@ export function Navigation() {
             label: "No tocar",
             key: "/dnt",
             icon: <StopOutlined />
+        },
+        {
+            label: "Cerrar Cesion",
+            key: "/logout",
+            icon: <UserAddOutlined />
         }];
 
     const onClick = (e) => {
         setCurrent(e.key);
         switch (e.key) {
-            case "/":
-                navigate("/");
+            case "/users":
+                navigate("/users");
                 break;
             case "/create":
                 navigate("/create");
@@ -62,6 +67,11 @@ export function Navigation() {
                 break;
             case "/dnt":
                 setOpen(true);
+                break;
+            case "/logout":
+                console.log("Logout");
+                logout();
+                navigate("/login");;
                 break;
         }
     };

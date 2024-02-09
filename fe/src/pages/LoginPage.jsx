@@ -1,4 +1,4 @@
-
+import { useNavigate} from "react-router-dom";
 import React from 'react';
 import { useForm } from "react-hook-form";
 import { Button, Checkbox, Form, Input } from 'antd';
@@ -7,6 +7,7 @@ import { useAuth } from "../context/authContext";
 
 
 export function LoginPage() {
+    const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
     //const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) });
     const { signin, errors: loginErrors, isAuthenticated } = useAuth();
@@ -14,6 +15,7 @@ export function LoginPage() {
     const onSubmit = async (values) => {
         console.log('Success:', values);
         await signin(values);
+        navigate("/users");
     };
     
     const onFinishFailed = (errorInfo) => {
