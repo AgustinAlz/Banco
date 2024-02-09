@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Select, Form, Input } from 'antd';
 import { getRolesRequest } from "../api/roles";
 import { getUserRequest, createUserRequest, updateUserRequest } from "../api/users";
+
 
 export function UserCRUPage() {
     const { id } = useParams();
@@ -51,6 +51,7 @@ export function UserCRUPage() {
 
     const onFinish = async (values) => {
         try {
+            console.log(user);
             if (user.editing) {
                 await updateUserRequest(user);
             } else {
@@ -86,63 +87,41 @@ export function UserCRUPage() {
 
     return (
         <>
-            <Form
-                layout="vertical"
-                form={form}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
-            >
-                <Form.Item
-                    label="Nombre"
-                    name="givenName"
-                    placeholder="Nombre"
-                    rules={[
+            <Form layout="vertical" form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
+                <Form.Item label="Nombre" name="givenName" placeholder="Nombre" initialValue={user.givenName} rules={[
                         {
                             required: true,
                             message: 'Por favor ingresar nombre.',
                         },
                     ]}
-                    initialValue={user.givenName}
+                    
                 >
                     <Input name="givenName" onChange={handleChange} />
                 </Form.Item>
-                <Form.Item
-                    label="Apellido"
-                    name="lastName"
-                    placeholder="Apellido"
-                    rules={[
+                <Form.Item label="Apellido" name="lastName" placeholder="Apellido" initialValue={user.lastName} rules={[
                         {
                             required: true,
                             message: 'Por favor ingresar apellido.',
                         },
-                    ]}
-                    initialValue={user.lastName}
+                    ]}                    
                 >
                     <Input name="lastName" onChange={handleChange} />
                 </Form.Item>
-                <Form.Item
-                    label="Correo Electrónico"
-                    name="email"
-                    rules={[
+                <Form.Item label="Correo Electrónico" name="email" initialValue={user.email} rules={[
                         {
                             required: true,
                             message: 'Por favor ingresar correo electrónico.',
                         },
-                    ]}
-                    initialValue={user.email}
+                    ]}                    
                 >
                     <Input name="email" onChange={handleChange} />
                 </Form.Item>
-                <Form.Item
-                    name="role"
-                    label="Rol"
-                    rules={[
+                <Form.Item name="role" label="Rol" initialValue={user.role.description} rules={[
                         {
                             required: true,
                             message: 'Por favor seleccionar un rol.',
                         },
-                    ]}
-                    initialValue={user.role.description}
+                    ]}                    
                 >
                     <Select placeholder="Seleccionar un rol" onChange={handle_select_role}>
                         {roles.map((role) => {
@@ -154,17 +133,12 @@ export function UserCRUPage() {
                         })}
                     </Select>
                 </Form.Item>
-                <Form.Item
-                    label="Contraseña"
-                    name="password"
-                    rules={[
+                <Form.Item label="Contraseña" name="password" hasFeedback initialValue={user.password} rules={[
                         {
                             required: true,
                             message: 'Por favor ingresar una contraseña.',
                         },
                     ]}
-                    hasFeedback
-                    initialValue={user.password}
                 >
                     <Input.Password name="password" onChange={handleChange} />
                 </Form.Item>
@@ -175,9 +149,6 @@ export function UserCRUPage() {
                     <Button onClick={() => cancel()}>
                         Cancelar
                     </Button>
-                </Form.Item>
-                <Form.Item>
-
                 </Form.Item>
             </Form >
         </>

@@ -1,16 +1,25 @@
 
 import React from 'react';
+import { useForm } from "react-hook-form";
 import { Button, Checkbox, Form, Input } from 'antd';
+//import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "../context/authContext";
 
-const onFinish = (values) => {
-    console.log('Success:', values);
-};
-
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-};
 
 export function LoginPage() {
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    //const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) });
+    const { signin, errors: loginErrors, isAuthenticated } = useAuth();
+
+    const onSubmit = async (values) => {
+        console.log('Success:', values);
+        await signin(values);
+    };
+    
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    };
+
     return (
         <Form
             name="basic"
@@ -26,13 +35,13 @@ export function LoginPage() {
             initialValues={{
                 remember: true,
             }}
-            onFinish={onFinish}
+            onFinish={onSubmit}
             onFinishFailed={onFinishFailed}
             autoComplete="off"
         >
             <Form.Item
-                label="Username"
-                name="username"
+                label="Correo Electrónico"
+                name="email"
                 rules={[
                     {
                         required: true,

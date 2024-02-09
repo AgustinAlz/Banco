@@ -10,27 +10,30 @@ import { UserCreatePage } from "./pages/UserCreatePage.jsx";
 import { UserProvider } from "./context/usersContext.jsx";
 import { RoleProvider } from "./context/rolesContext.jsx";
 import { UserCRUPage } from "./pages/UserCRUPage.jsx";
+import { AuthProvider } from "./context/authContext.jsx";
 
 
 function App() {
   return (
-    <RoleProvider>
-    <UserProvider>
-      <BrowserRouter>
-        <main>
-          <Navigation />
-          <Routes>
-            {/*<Route path="/" element={<HomePage />} />*/}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/users" element={<UserListPage />} />
-            <Route path="/roles" element={<RolesPage />} />
-            <Route path="/users/create" element={<UserCRUPage />} />
-            <Route path="/users/:id" element={<UserCRUPage />} />
-          </Routes>
-        </main>
-      </BrowserRouter >
-    </UserProvider>
-    </RoleProvider>
+    <AuthProvider>
+      <RoleProvider>
+        <UserProvider>
+          <BrowserRouter>
+            <main>
+              <Navigation />
+              <Routes>
+                {/*<Route path="/" element={<HomePage />} />*/}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/users" element={<UserListPage />} />
+                <Route path="/roles" element={<RolesPage />} />
+                <Route path="/users/create" element={<UserCRUPage />} />
+                <Route path="/users/:id" element={<UserCRUPage />} />
+              </Routes>
+            </main>
+          </BrowserRouter >
+        </UserProvider>
+      </RoleProvider>
+    </AuthProvider>
   )
 }
 
