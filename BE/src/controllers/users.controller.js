@@ -54,14 +54,25 @@ export const deleteUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
-        const { givenName, lastName, email, role, password } = req.body;
-        const userUpdated = await User.findOneAndUpdate(
-            { _id: req.params.id },
-            { givenName, lastName, email, role, password: await bcrypt.hash(password, 10)}, // hashing the password },
-            { new: true }
-        );
+        const { givenName, lastName, email, role, updatePassword, password } = req.body;
+        let userUpdated = [];
+        
+        if(updatePassword){
+            userUpdated = await User.findOneAndUpdate(
+                { _id: req.params.id },
+                { givenName, lastName, email, role, password: await bcrypt.hash(password, 10)}, // hashing the password },
+                { new: true }
+            );
+        }else{
+            userUpdated = await User.findOneAndUpdate(
+                { _id: req.params.id },
+                { givenName, lastName, email, role },
+                { new: true }
+            );
+        }
         return res.json(userUpdated);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+

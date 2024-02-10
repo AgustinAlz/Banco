@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-    //checkLogin();
+    checkLogin();
   }, []);
 
   return (

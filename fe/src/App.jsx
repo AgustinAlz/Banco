@@ -11,6 +11,7 @@ import { UserProvider } from "./context/usersContext.jsx";
 import { RoleProvider } from "./context/rolesContext.jsx";
 import { UserCRUPage } from "./pages/UserCRUPage.jsx";
 import { AuthProvider } from "./context/authContext.jsx";
+import { ProtectedRoute } from "./routes"
 
 
 function App() {
@@ -24,10 +25,12 @@ function App() {
               <Routes>
                 {/*<Route path="/" element={<HomePage />} />*/}
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/users" element={<UserListPage />} />
-                <Route path="/roles" element={<RolesPage />} />
-                <Route path="/users/create" element={<UserCRUPage />} />
-                <Route path="/users/:id" element={<UserCRUPage />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/users" element={<UserListPage />} />
+                  <Route path="/roles" element={<RolesPage />} />
+                  <Route path="/users/create" element={<UserCRUPage />} />
+                  <Route path="/users/:id" element={<UserCRUPage />} />
+                </Route>
               </Routes>
             </main>
           </BrowserRouter >

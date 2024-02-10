@@ -9,19 +9,21 @@ import { getUserRequest, createUserRequest, updateUserRequest } from "../api/use
 export function UserCRUPage() {
     const { id } = useParams();
     const [roles, setRoles] = useState([]);
+    const [resetPassword, setResetPassword] = useState(false);
     const [user, setUser] = useState({
         _id: "",
         givenName: "",
         lastName: "",
         email: "",
         role: "",
+        updatePassword: resetPassword,
         password: "",
         editing: false
     }
     );
     const navigate = useNavigate();
     const [form] = Form.useForm();
-    const [resetPassword, setResetPassword] = useState(false);
+    
 
     useEffect(() => {
         async function fetchData() {
@@ -37,6 +39,7 @@ export function UserCRUPage() {
                     lastName: res.data.lastName,
                     email: res.data.email,
                     role: res.data.role,
+                    updatePassword: resetPassword,
                     password: "",
                     editing: true
                 });
@@ -67,24 +70,21 @@ export function UserCRUPage() {
     };
 
     const handle_select_role = (value, key) => {
-        setUser({
-            ...user,
-            role: key.key
-        });
+        setUser({...user, role: key.key });
     }
 
     const handleChange = (e) => {
-        setUser({
-            ...user,
-            [e.target.name]: e.target.value
-        });
+        setUser({...user, [e.target.name]: e.target.value});
+    };
+
+    const handlePasswordChange = (e) => {
+        setUser({...user, password: e.target.value});
     };
 
     const doResetPassword = (e) => {
-        console.log("Paso por aca");
         setResetPassword(true);
-    };
-    
+        setUser({...user, updatePassword: resetPassword});
+    };    
 
     const cancel = async () => {
         navigate("/users");
@@ -140,14 +140,14 @@ export function UserCRUPage() {
                 </Form.Item>
                 {( resetPassword || !user.editing) ? (
                     <>
-                        <Form.Item label="Contraseña" name="password" hasFeedback initialValue={user.password} rules={[
+                        <Form.Item label="Contraseña" name="password" hasFeedback rules={[
                             {
                                 required: true,
                                 message: 'Por favor ingresar una contraseña.',
                             },
                         ]}
                         >
-                            <Input.Password name="password" onChange={handleChange} />
+                            <Input.Password name="password" onChange={handlePasswordChange} />
                         </Form.Item>
                     </>
                 ) : (
