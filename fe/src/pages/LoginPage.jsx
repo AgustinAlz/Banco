@@ -1,7 +1,7 @@
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import React from 'react';
 import { useForm } from "react-hook-form";
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Alert, Button, Checkbox, Form, Input } from 'antd';
 //import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../context/authContext";
 
@@ -16,7 +16,7 @@ export function LoginPage() {
         await signin(values);
         navigate("/users");
     };
-    
+
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
@@ -40,9 +40,11 @@ export function LoginPage() {
             onFinishFailed={onFinishFailed}
             autoComplete="off"
         >
+
             <Form.Item
                 label="Correo Electrónico"
                 name="email"
+                initialValue="superadmin@bancochelo.com"
                 rules={[
                     {
                         required: true,
@@ -86,6 +88,10 @@ export function LoginPage() {
                 <Button type="primary" htmlType="submit">
                     Submit
                 </Button>
+                {loginErrors.map((error, i) => (
+                    <Alert message={error} key={i} type="error" showIcon />
+                    //console.log(error);
+                ))}
             </Form.Item>
         </Form>
     );
