@@ -78,6 +78,11 @@ export function UserListPage() {
         }
     }
 
+    const enterUserAccounts = async (id) => {
+        navigate(`/owner/${id}/accounts`);
+    }
+
+
     useEffect(() => {
         getUsers();
     }, []);
@@ -105,7 +110,7 @@ export function UserListPage() {
                     <Button onClick={() => deleteUser(selectedRowKeys)} icon={<DeleteOutlined />} disabled={selectedRowKeys.length!=1} loading={loading}>
                         Eliminar
                     </Button>
-                    <Button onClick={() => editUser(selectedRowKeys)} icon={<DollarOutlined />}disabled={selectedRowKeys.length!=1} loading={loading}>
+                    <Button onClick={() => enterUserAccounts(selectedRowKeys)} icon={<DollarOutlined />}disabled={selectedRowKeys.length!=1} loading={loading}>
                         Cuentas
                     </Button>
                 </Space>
@@ -114,61 +119,3 @@ export function UserListPage() {
         </>
     );
 }
-
-/*
-<p>{hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}</p>
-reemplazo grid por table
-<div className="grid-box">
-                <div className="grid-header">
-                    <div className="grid-cell">
-                        <Button onClick={createUser} icon={<FileAddOutlined />}>
-                            Agregar
-                        </Button>
-                    </div>
-                    <Row className="gutter-row" span={6}>
-                        <Col className="gutter-row" span={1}>
-                            <div className="grid-cell">Acciones</div>
-                        </Col >
-                        <Col className="gutter-row" span={5}>
-                            <div className="grid-cell">ID</div>
-                        </Col >
-                        <Col className="gutter-row" span={4}>
-                            <div className="grid-cell">Nombre</div>
-                        </Col >
-                        <Col className="gutter-row" span={4}>
-                            <div className="grid-cell">Apellido</div>
-                        </Col >
-                        <Col className="gutter-row" span={6}>
-                            <div className="grid-cell">Mail</div>
-                        </Col >
-                        <Col className="gutter-row" span={4}>
-                            <div className="grid-cell">Rol</div>
-                        </Col >
-                    </Row>
-                </div>
-                {users.map(user => (
-                    <Row className="gutter-row" key={user._id} span={6}>
-                        <Col className="gutter-row" span={1}>
-                            <div className="grid-cell">
-                                <Button className="actions" onClick={() => editUser(user._id)} shape="circle" size="small" icon={<EditOutlined />} />
-                                <Button className="actions" onClick={() => deleteUser(user._id)} shape="circle" size="small" icon={<DeleteOutlined />} />
-                            </div>
-                        </Col >
-                        <Col className="gutter-row" span={5}>
-                            <div className="grid-cell">{user._id}</div>
-                        </Col >
-                        <Col className="gutter-row" span={4}>
-                            <div className="grid-cell">{user.givenName}</div>
-                        </Col >
-                        <Col className="gutter-row" span={4}>
-                            <div className="grid-cell">{user.lastName}</div>
-                        </Col >
-                        <Col className="gutter-row" span={6}>
-                            <div className="grid-cell">{user.email}</div>
-                        </Col >
-                        <Col className="gutter-row" span={4}>
-                            <div className="grid-cell">{user.role.description}</div>
-                        </Col >
-                    </Row>
-                ))}
-            </div>*/

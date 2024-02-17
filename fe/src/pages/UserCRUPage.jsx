@@ -1,15 +1,17 @@
 import React from 'react';
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Select, Form, Input } from 'antd';
+import { Alert, Button, Select, Form, Input } from 'antd';
 import { getRolesRequest } from "../api/roles";
-import { getUserRequest, createUserRequest, updateUserRequest } from "../api/users";
-
+import { getUsersRequest, getUserRequest, createUserRequest, updateUserRequest } from "../api/users";
+//import { userSchema } from "../schemas/user";
+//import { zodResolver } from "@hookform/resolvers/zod";
 
 export function UserCRUPage() {
     const { id } = useParams();
     const [roles, setRoles] = useState([]);
     const [resetPassword, setResetPassword] = useState(false);
+    const [errors, setErrors] = useState([]);
     const [user, setUser] = useState({
         _id: "",
         givenName: "",
@@ -23,6 +25,7 @@ export function UserCRUPage() {
     );
     const navigate = useNavigate();
     const [form] = Form.useForm();
+    //const [form] = Form.useForm({resolver: zodResolver(userSchema)});
     
 
     useEffect(() => {
@@ -54,15 +57,18 @@ export function UserCRUPage() {
 
     const onFinish = async (values) => {
         try {
+            //const users = await getUsersRequest();
+            //console.log(users);
             if (user.editing) {
                 await updateUserRequest(user);
             } else {
                 await createUserRequest(user);
             }
+            navigate("/users")
         } catch (error) {
             console.log(error);
+            setErrors(error);
         }
-        navigate("/users")
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -164,6 +170,10 @@ export function UserCRUPage() {
                     </Button>
                 </Form.Item>
             </Form >
+            {/*errors.map((error, i) => (
+                    <Alert message={error} key={i} type="error" showIcon />
+                    //console.log(error);
+            ))*/}
         </>
     );
 }
