@@ -4,7 +4,7 @@ import { auth, authAdmin } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.get("/:regularUsers", auth, getUsers);
+router.get("/", auth, getUsers);
 router.post("/create", authAdmin, createUser);
 router.get("/:id", auth, getUser);
 router.put("/:id", authAdmin, updateUser);

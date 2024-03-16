@@ -98,6 +98,7 @@ export function UserCRUPage() {
 
     return (
         <>
+        {console.log(user)}
             <Form layout="vertical" form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
                 <Form.Item label="Nombre" name="givenName" placeholder="Nombre" initialValue={user.givenName} rules={[
                     {

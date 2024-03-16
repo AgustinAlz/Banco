@@ -4,8 +4,10 @@ import bcrypt from "bcryptjs";
 
 export const getUsers = async (req, res) => {
     try {
-        const regularUsers = req.params.regularUsers;
-        const users = await getUsersService(regularUsers);
+        console.log("getUsers3");
+        console.log(req.query);
+        const { filter } = req.query;
+        const users = await getUsersService(filter);
         res.json(users);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -14,6 +16,8 @@ export const getUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
+        console.log("getUser");
+        console.log(req.params);
         const user = await User.findById({ "_id": req.params.id });
         await user.populate("role");
         if (!user) {

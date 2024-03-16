@@ -76,7 +76,9 @@ export function UserListPage() {
     }
 
     const getUsers = async () => {
-        const res = await getUsersRequest();
+        const config = { params: { filter: 'all' } };
+        const res = await getUsersRequest(config);
+        
         setUsers(res.data);
     };
 

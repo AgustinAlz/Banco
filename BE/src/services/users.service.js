@@ -1,19 +1,20 @@
 import User from "../models/user.model.js";
 
-export const getUsersService = async (onlyRegularUsers, onlyAdminUsers) => {
+export const getUsersService = async (filter) => {
     var users = users = await User.find().populate("role");
-    if (onlyRegularUsers != 'undefined' && onlyRegularUsers) {
-        //console.log("Only Regulars", onlyRegularUsers);
+    console.log("antes de filtrar",filter);
+    if (filter == 'regularUsersOnly') {
+        console.log("Only Regulars", filter);
         //ver de hacerlo por mongoose
         users = users.filter(user => !(user.role.adminPermission));
     }
 
-    if (onlyAdminUsers != 'undefined' && onlyAdminUsers) {
-        //console.log("Only Admin", onlyAdminUsers);
+    if (filter == 'admninUsersOnly') {
+        console.log("Only Admin", filter);
         //ver de hacerlo por mongoose
         users = users.filter(user => (user.role.adminPermission));
     }
-    //console.log("users", onlyRegularUsers, onlyAdminUsers, users);
+
     return users;
 }
 

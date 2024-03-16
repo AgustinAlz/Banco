@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Alert, Button, Select, Form, Input } from 'antd';
 import { getAccountTypesRequest } from "../api/accountTypes";
 import { getAccountsRequest, getAccountRequest, createAccountRequest, updateAccountRequest } from "../api/accounts";
-import { getRegularUsersRequest, getUsersRequest, getUserRequest } from '../api/users';
+import { getUsersRequest, getUserRequest } from '../api/users';
 import { useAuth } from "../context/authContext";
 import { accountSchema } from "../schemas/account";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,7 +59,8 @@ export function AccountCRUPage() {
             const responseAccountTypes = await getAccountTypesRequest();
             setAccountTypes(responseAccountTypes.data);
             //const responseOwners = await getRegularUsersRequest();
-            const responseOwners = await getUsersRequest(true);
+            const config = { params: { filter: 'regularUsersOnly' } };
+            const responseOwners = await getUsersRequest(config);
             setOwners(responseOwners.data);
             //console.log("owners",responseOwners.data);
             /*const responseAccountOwner = await getUserRequest(ownerId);
