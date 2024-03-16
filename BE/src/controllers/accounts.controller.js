@@ -1,10 +1,14 @@
 import Account from "../models/account.model.js";
 import jwt from "jsonwebtoken";
+import { getAccountService, createAccountService } from "../services/accounts.service.js";
+
 
 export const getAccounts = async (req, res) => {
     try {
         // Only Admin get all accounts
-        if(!decodedToken.role.adminPermission){
+        const { token } = req.cookies;
+        const user = jwt.decode(token);
+        if(!user.role.adminPermission){
             return res.status(401).json({ message: "Not Authorized." });
         }
         const accounts = await Account.find().populate("accountType").populate("owners");
@@ -16,7 +20,9 @@ export const getAccounts = async (req, res) => {
 
 export const getAccountsByOwner = async (req, res) => {
     try {
-        const accounts = await Account.find({"owners": req.params.id}).populate("accountType").populate("owners");
+        //const accounts = await Account.find({"owners": req.params.ownerId}).populate("accountType").populate("owners");
+        
+        const accounts = await Account.find({"owners": req.params.ownerId}).populate("accountType").populate("owners");
         res.json(accounts);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -25,7 +31,8 @@ export const getAccountsByOwner = async (req, res) => {
 
 export const getAccount = async (req, res) => {
     try {
-        const account = await Account.findById({ "_id": req.params.id }).populate("accountType").populate("owners");
+        //const account = await Account.findById({ "_id": req.params.id }).populate("accountType").populate("owners");
+        const account = await getAccountService(req.params.id);
         if (!account) {
             return res.status(404).json({ message: "Account not found" });
         }
@@ -43,12 +50,13 @@ export const createAccount = async (req, res) => {
         if(!decodedToken.role.adminPermission){
             return res.status(401).json({ message: "Not Authorized." });
         }
-        //const accounts = Account.find().populate("accountType").populate("owners");
         const { number, owners, accountType, balance } = req.body;
         const newAccount = new Account({number, owners, accountType, balance });
 
-        await newAccount.save();
-        res.json(newAccount);
+        res.json( await createAccountService(newAccount));
+
+        //await newAccount.save();
+        //res.json(newAccount);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

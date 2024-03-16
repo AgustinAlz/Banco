@@ -11,6 +11,7 @@ export function UserListPage() {
     const [users, setUsers] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isAccountButtonDissabled, setIsAccountButtonDisabled] = useState(true);
     const navigate = useNavigate();
 
     const columns = [
@@ -47,12 +48,32 @@ export function UserListPage() {
 
     const onSelectChange = (newSelectedRowKeys) => {
         setSelectedRowKeys(newSelectedRowKeys);
+        const selectedUsers = users.filter((user) => newSelectedRowKeys.includes(user._id));
+        const adminSelected = selectedUsers.filter((user) => user.role.adminPermission).length > 0;
+        if (newSelectedRowKeys.length == 1 && !adminSelected) {
+            setIsAccountButtonDisabled(false); //Button is enabled when 1 item is selected and user does not have adminPermission
+        } else {
+            setIsAccountButtonDisabled(true); 
+        }
+
     };
     const rowSelection = {
         selectedRowKeys,
         onChange: onSelectChange,
     };
     const hasSelected = selectedRowKeys.length > 0;
+
+    const buttonDissableHandler = e => {
+        console.log(e);
+        console.log(selectedRowKeys);
+        if (selectedRowKeys.length != 1) {
+            return "false"
+        } else {
+            return "true"
+        }
+        //if()
+
+    }
 
     const getUsers = async () => {
         const res = await getUsersRequest();
@@ -82,7 +103,6 @@ export function UserListPage() {
         navigate(`/owner/${id}/accounts`);
     }
 
-
     useEffect(() => {
         getUsers();
     }, []);
@@ -104,13 +124,13 @@ export function UserListPage() {
                     <Button type="primary" onClick={createUser} icon={<FileAddOutlined />}>
                         Agregar
                     </Button>
-                    <Button onClick={() => editUser(selectedRowKeys)} icon={<EditOutlined />} disabled={selectedRowKeys.length!=1} loading={loading}>
+                    <Button onClick={() => editUser(selectedRowKeys)} icon={<EditOutlined />} disabled={selectedRowKeys.length != 1} loading={loading}>
                         Editar
                     </Button>
-                    <Button onClick={() => deleteUser(selectedRowKeys)} icon={<DeleteOutlined />} disabled={selectedRowKeys.length!=1} loading={loading}>
+                    <Button onClick={() => deleteUser(selectedRowKeys)} icon={<DeleteOutlined />} disabled={selectedRowKeys.length != 1} loading={loading}>
                         Eliminar
                     </Button>
-                    <Button onClick={() => enterUserAccounts(selectedRowKeys)} icon={<DollarOutlined />}disabled={selectedRowKeys.length!=1} loading={loading}>
+                    <Button onClick={() => enterUserAccounts(selectedRowKeys)} icon={<DollarOutlined />} disabled={isAccountButtonDissabled} loading={loading}>
                         Cuentas
                     </Button>
                 </Space>

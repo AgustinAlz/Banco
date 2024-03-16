@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Alert, Button, Select, Form, Input } from 'antd';
 import { getAccountTypesRequest } from "../api/accountTypes";
 import { getAccountsRequest, getAccountRequest, createAccountRequest, updateAccountRequest } from "../api/accounts";
-import { getUsersRequest, getUserRequest } from '../api/users';
+import { getRegularUsersRequest, getUsersRequest, getUserRequest } from '../api/users';
 import { useAuth } from "../context/authContext";
 import { accountSchema } from "../schemas/account";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,8 +26,30 @@ export function AccountCRUPage() {
         accountType: "",
         balance: 0,
         editing: false
-    }
-    );
+    });
+
+    /*const [state, setState] = useState(async () => {
+
+        const responseAccountOwner = await getUserRequest(ownerId);
+        setUserOwner(responseAccountOwner.data);
+        console.log("Owner", responseAccountOwner.data);
+        //setAccount({ ...account, owners: new Array(responseAccountOwner.data) });
+        //console.log("cuenta", account);
+
+        const initialState = {
+            _id: "",
+            number: "",
+            owners: responseAccountOwner.data,
+            accountType: "",
+            balance: 0,
+            editing: false
+        }
+        console.log("account", initialState)
+        return initialState;
+    });
+
+    console.log("account2", state);*/
+
     const navigate = useNavigate();
     const [form] = Form.useForm();
     //const [form] = Form.useForm({resolver: zodResolver(accountSchema)});
@@ -36,10 +58,13 @@ export function AccountCRUPage() {
         async function fetchData() {
             const responseAccountTypes = await getAccountTypesRequest();
             setAccountTypes(responseAccountTypes.data);
-            const responseOwners = await getUsersRequest();
+            //const responseOwners = await getRegularUsersRequest();
+            const responseOwners = await getUsersRequest(true);
             setOwners(responseOwners.data);
-            const responseAccountOwner = await getUserRequest(ownerId);
+            //console.log("owners",responseOwners.data);
+            /*const responseAccountOwner = await getUserRequest(ownerId);
             setUserOwner(responseAccountOwner.data);
+            setAccount({...account, owners: [userOwner]});*/
 
             const accountId = id;
             if (accountId) {
@@ -52,12 +77,14 @@ export function AccountCRUPage() {
                     balance: res.data.balance,
                     editing: true
                 });
-                console.log(res.data);
+                //console.log(res.data);
             }
         }
         fetchData();
         form.resetFields()
     }, [form, account.editing]);
+
+    // console.log("cuenta", account);
 
     const formData = {
         id: 100,

@@ -1,9 +1,11 @@
 import User from "../models/user.model.js";
+import { getUsersService, deleteUserService } from "../services/users.service.js";
 import bcrypt from "bcryptjs";
 
 export const getUsers = async (req, res) => {
     try {
-        const users = await User.find().populate("role");
+        const regularUsers = req.params.regularUsers;
+        const users = await getUsersService(regularUsers);
         res.json(users);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -33,6 +35,7 @@ export const createUser = async (req, res) => {
             role,
             password: await bcrypt.hash(password, 10) // hashing the password
         });
+        //console.log(newUser);
         await newUser.save();
         res.json(newUser);
     } catch (error) {
@@ -42,7 +45,7 @@ export const createUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
     try {
-        const deletedUser = await User.findByIdAndDelete(req.params.id);
+        const deletedUser = await deleteUserService(req.params.id);
         if (!deletedUser) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -56,14 +59,14 @@ export const updateUser = async (req, res) => {
     try {
         const { givenName, lastName, email, role, updatePassword, password } = req.body;
         let userUpdated = [];
-        
-        if(updatePassword){
+
+        if (updatePassword) {
             userUpdated = await User.findOneAndUpdate(
                 { _id: req.params.id },
-                { givenName, lastName, email, role, password: await bcrypt.hash(password, 10)}, // hashing the password },
+                { givenName, lastName, email, role, password: await bcrypt.hash(password, 10) }, // hashing the password },
                 { new: true }
             );
-        }else{
+        } else {
             userUpdated = await User.findOneAndUpdate(
                 { _id: req.params.id },
                 { givenName, lastName, email, role },
