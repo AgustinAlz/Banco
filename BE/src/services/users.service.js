@@ -1,21 +1,47 @@
 import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
 
 export const getUsersService = async (filter) => {
     var users = users = await User.find().populate("role");
-    console.log("antes de filtrar",filter);
     if (filter == 'regularUsersOnly') {
-        console.log("Only Regulars", filter);
         //ver de hacerlo por mongoose
         users = users.filter(user => !(user.role.adminPermission));
     }
 
     if (filter == 'admninUsersOnly') {
-        console.log("Only Admin", filter);
         //ver de hacerlo por mongoose
         users = users.filter(user => (user.role.adminPermission));
     }
 
     return users;
+}
+
+export const updateUserService = async (id, user, updatePassword) => {
+    let userUpdated = [];
+    if (updatePassword) {
+        userUpdated = await User.findOneAndUpdate({ _id: id }, {
+            givenName: user.givenName,
+            lastName: user.lastName,
+            fullName: user.givenName + " " + user.lastName,
+            email: user.email,
+            roele: user.role,
+            password: await bcrypt.hash(user.password, 10)// hashing the password },
+        },
+            { new: true }
+        );
+    } else {
+        userUpdated = await User.findOneAndUpdate({ _id: id }, {
+            givenName: user.givenName,
+            lastName: user.lastName,
+            fullName: user.givenName + " " + user.lastName,
+            email: user.email,
+            roel: user.role
+        },
+            { new: true }
+        );
+    }
+
+    return userUpdated;
 }
 
 export const deleteUserService = async (id) => {
