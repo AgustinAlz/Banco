@@ -26,7 +26,7 @@ export function UserCRUPage() {
     const navigate = useNavigate();
     const [form] = Form.useForm();
     //const [form] = Form.useForm({resolver: zodResolver(userSchema)});
-    
+
 
     useEffect(() => {
         async function fetchData() {
@@ -53,12 +53,10 @@ export function UserCRUPage() {
         form.setFieldsValue({
             givenName: user.givenName
         });
-    }, [form, user.editing, resetPassword]);
+    }, [form, user.editing]);
 
     const onFinish = async (values) => {
         try {
-            //const users = await getUsersRequest();
-            //console.log(users);
             if (user.editing) {
                 await updateUserRequest(user);
             } else {
@@ -76,21 +74,21 @@ export function UserCRUPage() {
     };
 
     const handle_select_role = (value, key) => {
-        setUser({...user, role: key.key });
+        setUser({ ...user, role: key.key });
     }
 
     const handleChange = (e) => {
-        setUser({...user, [e.target.name]: e.target.value});
+        setUser({ ...user, [e.target.name]: e.target.value });
     };
 
     const handlePasswordChange = (e) => {
-        setUser({...user, password: e.target.value});
+        setUser({ ...user, password: e.target.value });
     };
 
     const doResetPassword = (e) => {
         setResetPassword(true);
-        setUser({...user, updatePassword: resetPassword});
-    };    
+        setUser({ ...user, updatePassword: true });
+    };
 
     const cancel = async () => {
         navigate("/users");
@@ -98,7 +96,7 @@ export function UserCRUPage() {
 
     return (
         <>
-        {console.log(user)}
+            {/*console.log(user)*/}
             <Form layout="vertical" form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
                 <Form.Item label="Nombre" name="givenName" placeholder="Nombre" initialValue={user.givenName} rules={[
                     {
@@ -145,7 +143,7 @@ export function UserCRUPage() {
                         })}
                     </Select>
                 </Form.Item>
-                {( resetPassword || !user.editing) ? (
+                {(resetPassword || !user.editing) ? (
                     <>
                         <Form.Item label="Contraseña" name="password" hasFeedback rules={[
                             {

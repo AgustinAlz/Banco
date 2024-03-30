@@ -1,8 +1,12 @@
 import Account from "../models/account.model.js";
 import { getUsersService } from "./users.service.js";
 
+export const getAccountService = async (accountId) => {
+    return await Account.findById({ "_id": accountId }).populate("accountType").populate("owners");
+}
+
 export const createAccountService = async (account) => {
-    const adminUsers = await getUsersService(false, true);
+    const adminUsers = await getUsersService('admninUsersOnly');
     const adminOnwer = adminUsers.filter((admin) => account.owners.includes(admin._id)).length > 0;
 
     if (adminOnwer) {
@@ -12,6 +16,3 @@ export const createAccountService = async (account) => {
     return await account.save();;
 }
 
-export const getAccountService = async (accountId) => {
-    return await Account.findById({ "_id": accountId }).populate("accountType").populate("owners");
-}

@@ -33,7 +33,6 @@ export function UserProvider({ children }) {
   const createUser = async (user) => {
     try {
       const res = await createUserRequest(user);
-      //console.log(res.data);
     } catch (error) {
       console.log(error);
     }

@@ -4,10 +4,10 @@ import { auth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.get("/account/:accountId/transactions", auth, getTransactions);
-router.get("/account/:accountId/transactions/:id", auth, getTransaction);
-router.post("/account/:accountId/transactions/create", auth, createTransaction);
-router.put("/account/:accountId/transactions/:id", auth, updateTransaction);
-router.delete("/account/:accountId/transactions/:id", auth, deleteTransaction);
+router.get("/account/:accountId", auth, getTransactions);
+router.get("/:id", auth, getTransaction);
+router.post("/create", auth, createTransaction);
+router.put("/:id", auth, updateTransaction);
+router.delete("/:id", auth, deleteTransaction);
 
 export default router;

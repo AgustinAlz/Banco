@@ -4,13 +4,16 @@ import { getAccountService } from "./accounts.service.js";
 export const getTransactionsService = async (accountId, user) => {
     const account = await getAccountService(accountId);
     const owner = account.owners.filter((owner) => owner == user._id)
-    const isUserOwner = account.owners.filter((owner) => owner._id == user.id).length > 0;
-    console.log(owner);
+    const isUserOwner = account.owners.filter((owner) => owner._id == user.id).length > 0;  
 
     if (!user.role.adminPermission && !isUserOwner) {
         throw new Error('User does not have permission to create transaction.');
     }
-    return await Transaction.find().populate("account");
+
+    const transactions = (await Transaction.find().populate("account")).filter((transaction) => transaction.account._id == accountId);
+
+
+    return transactions;
 }
 
 export const getTransactionService = async (transactionId, user) => {
@@ -51,5 +54,5 @@ export const updateTransactionService = async (transactionId, transaction, user)
 }
 
 export const deleteTransactionService = async (transactionId) => {
-
+    console.log("delete transactions")
 }

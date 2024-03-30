@@ -88,10 +88,10 @@ export const updateAccount = async (req, res) => {
         if(!decodedToken.role.adminPermission){
             return res.status(401).json({ message: "Not Authorized." });
         }
-        const { numbers, owners, accountType, balance} = req.body;
+        const { number, owners, accountType, balance} = req.body;
         const accountUpdated = await Account.findOneAndUpdate(
                 { _id: req.params.id },
-                { numbers, owners, accountType, balance},
+                { number, owners, accountType, balance},
                 { new: true }
             );
         

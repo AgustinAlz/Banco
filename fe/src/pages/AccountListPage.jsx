@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Space, Table } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
-import { DeleteOutlined, EditOutlined, FileAddOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FileAddOutlined, TransactionOutlined, RollbackOutlined} from '@ant-design/icons';
 import { useUsers } from "../context/usersContext";
 import { getAccountsByOwnerRequest, deleteAccountRequest } from "../api/accounts";
 import "../styles/Grid.css"
@@ -83,6 +83,11 @@ export function AccountListPage() {
         }
     }
 
+    const enterAccountTransactions = async (id) => {
+        const currentUrl = window.location.pathname;
+        navigate(`${currentUrl}/${id}/transactions`);
+    }
+
     useEffect(() => {
         getAccountsByOwner(ownerId);
     }, []);
@@ -109,6 +114,12 @@ export function AccountListPage() {
                     </Button>
                     <Button onClick={() => deleteAccount(selectedRowKeys)} icon={<DeleteOutlined />} disabled={selectedRowKeys.length!=1} loading={loading}>
                         Eliminar
+                    </Button>
+                    <Button onClick={() => enterAccountTransactions(selectedRowKeys)} icon={<TransactionOutlined />} disabled={selectedRowKeys.length!=1} loading={loading}>
+                        Transacciones
+                    </Button>
+                    <Button onClick={() => navigate(-1)} icon={<RollbackOutlined />} loading={loading}>
+                        Volver
                     </Button>
                 </Space>
                 <Table rowSelection={rowSelection} columns={columns} dataSource={accounts} rowKey="_id"></Table>

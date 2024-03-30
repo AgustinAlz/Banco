@@ -3,10 +3,12 @@ import { Button, Flex, Layout, Menu, Modal, Space, Typography } from 'antd';
 import { FileTextOutlined, FileAddOutlined, UserAddOutlined, StopOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
+import { HomePage } from "./HomePage";
 
 export function Navigation() {
     const [current, setCurrent] = useState('listNote');
     const [open, setOpen] = useState(false);
+    const [isHomePage, setIsHomePage] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const { isAuthenticated, logout, user } = useAuth();
@@ -14,6 +16,7 @@ export function Navigation() {
     const { Header, Content, Footer, Sider } = Layout;
 
     useEffect(() => {
+        setIsHomePage(location.pathname == "/" || location.pathname == "/login");
         if (location) {
             if (location.pathname.startsWith("/edit")) {
                 setCurrent("/create");
@@ -76,7 +79,7 @@ export function Navigation() {
                 break;
             case "/logout":
                 logout();
-                navigate("/login");;
+                navigate("/login");
                 break;
         }
     };
@@ -84,7 +87,7 @@ export function Navigation() {
 
     const boxStyle = {
         width: '100%',
-        
+
         borderRadius: 6,
         border: '1px solid #40a9ff',
     };
@@ -92,10 +95,10 @@ export function Navigation() {
     return (
         <>
 
-            {isAuthenticated ? (
+            {isAuthenticated && !isHomePage ? (
                 <>
                     <Flex style={boxStyle} align="start">
-                        <p style={{width: '200px'}}>Banco Chelo</p>
+                        <p style={{ width: '200px' }}>Banco Chelo</p>
                         <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuOptions} />
                         <Modal
                             title="Never Gonna Give You App"
@@ -114,7 +117,15 @@ export function Navigation() {
                     </Flex>
                 </>
             ) : (
-                <p>barrita</p>
+                <>
+                    <Flex style={boxStyle} align="start">
+                        <p style={{ width: '200px' }}>Banco Chelo</p>
+
+                        <Flex style={boxStyle} justify='flex-end' align='center'>
+                            <Button onClick={() => { navigate("/login") }}>Iniciar Sesión</Button>
+                        </Flex>
+                    </Flex>
+                </>
             )}
         </>
     )

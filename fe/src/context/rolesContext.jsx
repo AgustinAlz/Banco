@@ -33,7 +33,6 @@ export function RoleProvider({ children }) {
   const createRole = async (role) => {
     try {
       const res = await createRoleRequest(role);
-      console.log(res.data);
     } catch (error) {
       console.log(error);
     }

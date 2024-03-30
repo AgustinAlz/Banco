@@ -40,7 +40,7 @@ export const updateUserService = async (id, user, updatePassword) => {
             { new: true }
         );
     }
-
+    
     return userUpdated;
 }
 

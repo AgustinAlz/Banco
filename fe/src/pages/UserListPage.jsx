@@ -64,15 +64,11 @@ export function UserListPage() {
     const hasSelected = selectedRowKeys.length > 0;
 
     const buttonDissableHandler = e => {
-        console.log(e);
-        console.log(selectedRowKeys);
         if (selectedRowKeys.length != 1) {
             return "false"
         } else {
             return "true"
         }
-        //if()
-
     }
 
     const getUsers = async () => {
@@ -111,12 +107,12 @@ export function UserListPage() {
 
     return (
         <>
-            <p>users</p>
+            <h1>Usuarios</h1>
             {loading && users.length === 0 && (
                 <div>
                     <div>
                         <h1>
-                            No users yet, please add a new user
+                            No hay usuarios, por favor cree uno.
                         </h1>
                     </div>
                 </div>

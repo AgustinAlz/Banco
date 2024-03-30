@@ -52,9 +52,9 @@ export const deleteTransaction = async (req, res) => {
         if (!decodedToken.role.adminPermission) {
             return res.status(401).json({ message: "Not Authorized." });
         }
-        const deletedAccount = await Account.findByIdAndDelete(req.params.id);
-        if (!deletedAccount) {
-            return res.status(404).json({ message: "Account not found" });
+        const deletedTransaction = await Transaction.findByIdAndDelete(req.params.id);
+        if (!deletedTransaction) {
+            return res.status(404).json({ message: "Transaction not found" });
         }
         return res.sendStatus(204);
     } catch (error) {

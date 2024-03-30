@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 
 export const getUsers = async (req, res) => {
     try {
-
         const { filter } = req.query;
         const users = await getUsersService(filter);
         res.json(users);

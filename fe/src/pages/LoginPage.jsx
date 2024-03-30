@@ -3,18 +3,19 @@ import React from 'react';
 import { useForm } from "react-hook-form";
 import { Alert, Button, Checkbox, Form, Input } from 'antd';
 //import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "../context/authContext";
+import { useAuth, AuthProvider } from "../context/authContext";
+import { useContext } from "react";
 
 
 export function LoginPage() {
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
     //const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) });
-    const { signin, errors: loginErrors, isAuthenticated } = useAuth();
+    const { signin, errors: loginErrors, isAuthenticated, user } = useAuth();
 
     const onSubmit = async (values) => {
-        await signin(values);
-        navigate("/users");
+        const u = await signin(values);
+        u.role.adminPermission ? navigate("/users"): navigate(`/owner/${u.id}/accounts`);
     };
 
     const onFinishFailed = (errorInfo) => {

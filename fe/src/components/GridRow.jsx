@@ -4,7 +4,6 @@ import { useUsers } from "../context/usersContext.jsx";
 
 
 export function GridRow({ user }) {
-console.log(user);
     return
     <div>
         <Row className="gutter-row" key={user._id} span={6}>

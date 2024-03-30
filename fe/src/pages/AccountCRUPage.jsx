@@ -115,17 +115,13 @@ export function AccountCRUPage() {
 
     const onFinish = async (values) => {
         try {
-
             if (account.editing) {
                 await updateAccountRequest(account);
-                console.log("Editando", account);
             } else {
                 await createAccountRequest(account);
-                console.log("Creando", account);
             }
             navigate(`/owner/${ownerId}/accounts/`)
         } catch (error) {
-            console.log(error);
             setErrors(error);
         }
     };

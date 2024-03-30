@@ -20,6 +20,6 @@ app.use("/api/users", usersRoutes);
 app.use("/api", rolesRoutes);
 app.use("/api/accounts", accountsRoutes);
 app.use("/api/accountsTypes", accountTypesRoutes);
-app.use("/api", transactionsRoutes);
+app.use("/api/transactions", transactionsRoutes);
 
 export default app;
