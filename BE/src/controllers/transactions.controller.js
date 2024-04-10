@@ -4,6 +4,7 @@ import jwt, { decode } from "jsonwebtoken";
 
 export const getTransactions = async (req, res) => {
     try {
+        //const transactions = await getTransactionsService(req.params.accountId);
         const transactions = await getTransactionsService(req.params.accountId, req.user);
         return res.json(transactions);
     } catch (error) {
@@ -14,7 +15,7 @@ export const getTransactions = async (req, res) => {
 
 export const getTransaction = async (req, res) => {
     try {
-        const transaction = await getTransactionService(req.params.id, req.user)
+        const transaction = await getTransactionService(req.params.id, req.user);
 
         if (!transaction) {
             return res.status(404).json({ message: "Transaction not found" });
@@ -27,8 +28,8 @@ export const getTransaction = async (req, res) => {
 
 export const createTransaction = async (req, res) => {
     try {
-        const { account, date, amount, notes } = req.body;
-        const newTransaction = new Transaction({ account, date, amount, notes });
+        const { account, date, transType, amount, notes } = req.body;
+        const newTransaction = new Transaction({ account, date, transType, amount, notes });
         res.json(await createTransactionService(newTransaction, req.user));
     } catch (error) {
         return res.status(500).json({ message: error.message });

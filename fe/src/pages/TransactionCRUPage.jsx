@@ -1,22 +1,28 @@
 import React from 'react';
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import { DatePicker, Alert, Button, Form, Input } from 'antd';
+import { DatePicker, Alert, Button, Form, Input, InputNumber } from 'antd';
+import { Typography } from 'antd';
 import { getTransactionRequest, createTransactionRequest, updateTransactionRequest } from "../api/transactions";
+import { useAuth } from "../context/authContext";
 import moment from 'moment';
 
 export function TransactionCRUPage() {
-    const { id, accountId } = useParams();
+    const { user } = useAuth();
+    const { id, accountId, transactionType } = useParams();
     const dateFormat = 'DD/MM/YYYY';
+    const { Title } = Typography;
     const navigate = useNavigate();
     const [form] = Form.useForm();
-    const [errors, setErrors] = useState([]);   
+    const [errors, setErrors] = useState([]);
+    const [transType, setTransType] = useState(transactionType);
     const [transaction, setTransaction] = useState({
         _id: "",
         account: accountId,
         date: moment(),
         notes: "",
         amount: "",
+        transType,
         editing: false
     });
 
@@ -30,9 +36,11 @@ export function TransactionCRUPage() {
                     account: res.data.account,
                     date: moment(res.data.date),
                     notes: res.data.notes,
-                    amount: res.data.amount,
+                    amount: Math.abs(res.data.amount),
+                    transType: res.data.transType,
                     editing: true
                 });
+                setTransType(res.data.transType);
             }
         }
         fetchData();
@@ -48,6 +56,8 @@ export function TransactionCRUPage() {
             if (transaction.editing) {
                 await updateTransactionRequest(transaction);
             } else {
+                if(transType == 'extraction'){
+                }
                 await createTransactionRequest(transaction);
             }
             navigate(-1);
@@ -83,20 +93,33 @@ export function TransactionCRUPage() {
         amount: transaction.amount
     };
 
+    /*const validateMessages = {
+        required: '${label} is required!',
+        types: {
+          email: '${label} is not a valid email!',
+          number: '${label} is not a valid number!',
+        },
+        number: {
+          range: '${label} must be between ${min} and ${max}',
+        },
+      };*/
+
+      //{transType = 'deposit' ? <Title level={2}><b>Depósito</b></Title> : <Title level={2}><b>Extracción</b></Title>}
+
     return (
         <>
-            <h1>Transaction CRUD</h1>
+            <Title level={2}><b>{transType == 'deposit' ? 'Depósito' : 'Extracción'}</b></Title>
 
-            <Form layout="vertical" initialValues={formData} form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
+            <Form layout="vertical" initialValues={formData} form={form} onFinish={onFinish} onFinishFailed={onFinishFailed} >
 
-                <Form.Item name={"date"} label="Fecha"  rules={[
+                <Form.Item name={"date"} label="Fecha" rules={[
                     {
                         required: true,
                         message: 'Por favor ingresar Fecha.',
                     },
                 ]}>
-                    <DatePicker initialValue={transaction.date}
-                     
+                    <DatePicker disabled={!user.role.adminPermission} initialValue={transaction.date}
+
                         format={dateFormat}
                         onChange={onDateChange}
                     />
@@ -115,8 +138,25 @@ export function TransactionCRUPage() {
                 <Form.Item label="Importe" name={"amount"} placeholder="0,00" initialValue={transaction.amount} rules={[
                     {
                         required: true,
-                        message: 'Por favor ingresar un importe.',
+                        message: "El importe es requerido."
                     },
+                    () => ({
+                        validator(_, value) {
+                            if (!value) {
+                                return Promise.reject();
+                            }
+                            if (isNaN(value)) {
+                                return Promise.reject("Por favor ingrese un número. ");
+                            }
+                            if (value <= 0) {
+                                return Promise.reject("Por favor ingrese un número superior a cero.");
+                            }
+                            if ((value * 100) % 1 != 0) {
+                                return Promise.reject("Sólo se puede insertar 2 decimales.");
+                            }
+                            return Promise.resolve();
+                        },
+                    }),
                 ]}
                 >
                     <Input name={"amount"} onChange={handleChange} />

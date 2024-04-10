@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import { Alert, Button, Select, Form, Input } from 'antd';
+import { Alert, message,  Button, Select, Form, Input } from 'antd';
 import { getRolesRequest } from "../api/roles";
 import { getUsersRequest, getUserRequest, createUserRequest, updateUserRequest } from "../api/users";
 //import { userSchema } from "../schemas/user";
@@ -11,7 +11,7 @@ export function UserCRUPage() {
     const { id } = useParams();
     const [roles, setRoles] = useState([]);
     const [resetPassword, setResetPassword] = useState(false);
-    const [errors, setErrors] = useState([]);
+    const [cruUserErrors, setCruUserErrors] = useState([]);
     const [user, setUser] = useState({
         _id: "",
         givenName: "",
@@ -25,6 +25,7 @@ export function UserCRUPage() {
     );
     const navigate = useNavigate();
     const [form] = Form.useForm();
+    const [messageApi, contextHolder] = message.useMessage();
     //const [form] = Form.useForm({resolver: zodResolver(userSchema)});
 
 
@@ -32,7 +33,7 @@ export function UserCRUPage() {
         async function fetchData() {
             const response = await getRolesRequest();
             setRoles(response.data);
-
+            setCruUserErrors([]);
             const userId = id;
             if (userId) {
                 const res = await getUserRequest(userId);
@@ -64,13 +65,23 @@ export function UserCRUPage() {
             }
             navigate("/users")
         } catch (error) {
-            console.log(error);
-            setErrors(error);
+            console.log("Error", error);
+            //setCruUserErrors(error.response.data.message);
+            showError(error);
         }
     };
 
+    const showError = (error) => {
+        console.log("showError",error);
+        messageApi.open({
+          type: 'error',
+          content: error.response.data.message,
+        });
+      };
+
     const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
+        console.log(errorInfo);
+        //setcruUserErrors(error.response.data.message);
     };
 
     const handle_select_role = (value, key) => {
@@ -97,6 +108,10 @@ export function UserCRUPage() {
     return (
         <>
             {/*console.log(user)*/}
+            {contextHolder}
+            {/*cruUserErrors.map((error, i) => (
+                <Alert message={error} key={i} type="error" showIcon />
+            ))*/}
             <Form layout="vertical" form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
                 <Form.Item label="Nombre" name="givenName" placeholder="Nombre" initialValue={user.givenName} rules={[
                     {
@@ -122,6 +137,10 @@ export function UserCRUPage() {
                         required: true,
                         message: 'Por favor ingresar correo electrónico.',
                     },
+                    {
+                        type: "email",
+                        message: "El texto ingresado no es un correo electrónico.",
+                    }
                 ]}
                 >
                     <Input name="email" onChange={handleChange} />
@@ -133,7 +152,7 @@ export function UserCRUPage() {
                     },
                 ]}
                 >
-                    <Select placeholder="Seleccionar un rol" onChange={handle_select_role}>
+                    <Select disabled={user.editing} placeholder="Seleccionar un rol" onChange={handle_select_role}>
                         {roles.map((role) => {
                             return (
                                 <Select.Option key={role._id} value={role.description}>
@@ -169,10 +188,7 @@ export function UserCRUPage() {
                     </Button>
                 </Form.Item>
             </Form >
-            {/*errors.map((error, i) => (
-                    <Alert message={error} key={i} type="error" showIcon />
-                    //console.log(error);
-            ))*/}
+            
         </>
     );
 }

@@ -36,11 +36,14 @@ function App() {
                   <Route path="/users/:id" element={<UserCRUPage />} />
                 </Route>
                 <Route element={<ProtectedRoute />}>
+                  <Route path="/accounts/" element={<AccountListPage />} />
                   <Route path="/owner/:ownerId/accounts/" element={<AccountListPage />} />
                   <Route path="/owner/:ownerId/accounts/create" element={<AccountCRUPage />} />
+                  <Route path="/accounts/create" element={<AccountCRUPage />} />
+                  <Route path="/accounts/:id" element={<AccountCRUPage />} />
                   <Route path="/owner/:ownerId/accounts/:id" element={<AccountCRUPage />} />
                   <Route path="/owner/:ownerId/accounts/:accountId/transactions/" element={<TransactionListPage />} />
-                  <Route path="/owner/:ownerId/accounts/:accountId/transactions/create" element={<TransactionCRUPage />} />
+                  <Route path="/owner/:ownerId/accounts/:accountId/transactions/create/:transactionType" element={<TransactionCRUPage />} />
                   <Route path="/owner/:ownerId/accounts/:accountId/transactions/:id" element={<TransactionCRUPage />} />
                 </Route>
               </Routes>

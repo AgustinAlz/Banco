@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-import { getUsersService, updateUserService, deleteUserService } from "../services/users.service.js";
+import { getUsersService, createUsersService, updateUserService, deleteUserService } from "../services/users.service.js";
 import bcrypt from "bcryptjs";
 
 export const getUsers = async (req, res) => {
@@ -35,10 +35,10 @@ export const createUser = async (req, res) => {
             role,
             password: await bcrypt.hash(password, 10) // hashing the password
         });
-
-        await newUser.save();
-        res.json(newUser);
+        const newUserSaved = await createUsersService(newUser);
+        res.json(newUserSaved);
     } catch (error) {
+        console.log("El error es:", error);
         return res.status(500).json({ message: error.message });
     }
 };

@@ -1,10 +1,11 @@
 import Account from "../models/account.model.js";
 import jwt from "jsonwebtoken";
-import { getAccountsService, getAccountsByOwnerService, getAccountService, createAccountService, deleteAccountService, updateAccountService } from "../services/accounts.service.js";
+import { getAccountsService, getAccountsByOwnerService, getAccountService, createAccountService, deleteAccountService, updateAccountService, nextAccountService } from "../services/accounts.service.js";
 
 
 export const getAccounts = async (req, res) => {
     try {
+        
         const accounts = await getAccountsService(req.user);
         res.json(accounts);
     } catch (error) {
@@ -38,11 +39,7 @@ export const createAccount = async (req, res) => {
     try {
         const { number, owners, accountType, balance } = req.body;
         const newAccount = new Account({ number, owners, accountType, balance });
-
-        res.json(await createAccountService(newAccount, req.user));
-
-        //await newAccount.save();
-        //res.json(newAccount);
+        return res.json(await createAccountService(newAccount, req.user));
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -61,6 +58,15 @@ export const updateAccount = async (req, res) => {
     try {
         const accountUpdated = await updateAccountService(req.params.id, req.body, req.user);
         return res.json(accountUpdated);
+    } catch (error) {
+        return res.status(error.statusCode ? error.statusCode : 500).json({ message: error.message });
+    }
+};
+
+export const getNextAccount = async (req, res) => {
+    try {
+        const nextAccount = await nextAccountService();
+        return res.json(nextAccount);
     } catch (error) {
         return res.status(error.statusCode ? error.statusCode : 500).json({ message: error.message });
     }

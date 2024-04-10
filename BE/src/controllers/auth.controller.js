@@ -54,7 +54,7 @@ export const verifyToken = async (req, res) => {
   jwt.verify(token, TOKEN_SECRET, async (error, user) => {
     if (error) return res.sendStatus(401);
 
-    const userFound = await User.findById(user.id);
+    const userFound = await User.findById(user.id).populate("role");
     if (!userFound) return res.sendStatus(401);
 
     return res.json({

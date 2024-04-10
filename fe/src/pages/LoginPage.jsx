@@ -91,7 +91,6 @@ export function LoginPage() {
                 </Button>
                 {loginErrors.map((error, i) => (
                     <Alert message={error} key={i} type="error" showIcon />
-                    //console.log(error);
                 ))}
             </Form.Item>
         </Form>

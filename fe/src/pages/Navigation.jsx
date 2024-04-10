@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Flex, Layout, Menu, Modal, Space, Typography } from 'antd';
-import { FileTextOutlined, FileAddOutlined, UserAddOutlined, StopOutlined } from '@ant-design/icons';
+import { UserOutlined, DollarOutlined, LogoutOutlined, StopOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { HomePage } from "./HomePage";
@@ -13,7 +13,11 @@ export function Navigation() {
     const location = useLocation();
     const { isAuthenticated, logout, user } = useAuth();
     const { Title } = Typography;
-    const { Header, Content, Footer, Sider } = Layout;
+    const [, forceRender] = useState(undefined);
+
+    const reREnder = () => {
+        forceRender((prev) => !prev);
+    };
 
     useEffect(() => {
         setIsHomePage(location.pathname == "/" || location.pathname == "/login");
@@ -32,31 +36,20 @@ export function Navigation() {
     }
     const menuOptions = [
         {
-            label: "Lista de Usuarios",
+            label: "Usuarios",
             key: "/users",
-            icon: <FileTextOutlined />
+            icon: <UserOutlined />
         },
         {
-            label: "Crear Nota",
-            key: "/create",
-            icon: <FileAddOutlined />
-        },
-        {
-            label: "Crear Usuario",
-            key: "/user",
-            icon: <UserAddOutlined />
+            label: "Cuentas",
+            key: "/accounts",
+            icon: <DollarOutlined />
         },
         {
             label: "No tocar",
             key: "/dnt",
             icon: <StopOutlined />
-        },
-        {
-            label: "Cerrar Cesion",
-            key: "/logout",
-            style: { float: 'right' },
-            icon: <UserAddOutlined />
-        }];
+        },];
     const logut = () => {
         logout();
         navigate("/login");;
@@ -68,11 +61,10 @@ export function Navigation() {
             case "/users":
                 navigate("/users");
                 break;
-            case "/create":
-                navigate("/create");
-                break;
-            case "/user":
-                navigate("/user");
+            case "/accounts":
+                navigate("/accounts");
+                //reREnder();
+                window.location.reload();
                 break;
             case "/dnt":
                 setOpen(true);
@@ -87,19 +79,27 @@ export function Navigation() {
 
     const boxStyle = {
         width: '100%',
+        height: '48px',
+        //borderRadius: 6,
+        //border: '1px solid rgba(5, 5, 5, 0.06)',
+        //borderBottom: '1px solid #40a9ff',
+        //borderBottom: '2px solid #050505',
+        borderBottom: '1px solid rgba(25, 25, 25, 0.96)',
 
-        borderRadius: 6,
-        border: '1px solid #40a9ff',
     };
 
     return (
         <>
-
             {isAuthenticated && !isHomePage ? (
                 <>
                     <Flex style={boxStyle} align="start">
-                        <p style={{ width: '200px' }}>Banco Chelo</p>
-                        <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuOptions} />
+
+                        <Title style={{ marginTop: 10, width: '250px', /*border: '1px solid #40a9ff'*/ }} level={4}><b>Banco Chelo</b></Title>
+                        {
+                            user.role.adminPermission
+                                ? <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuOptions} style={{ width: '700px', height: '100%', }} />
+                                : <></>
+                        }
                         <Modal
                             title="Never Gonna Give You App"
                             centered
@@ -110,16 +110,17 @@ export function Navigation() {
                         >
                             <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=Zn_7DBUkKiYYxy80&autoplay=1" title="Never Gonna Give You App" allow="autoplay;"></iframe>
                         </Modal>
-                        <Flex style={boxStyle} justify='flex-end' align='center'>
-                            <p>{user.givenName + " " + user.lastName}</p>
-                            <Button onClick={logout} icon={<UserAddOutlined />}>Cerrar Sesión</Button>
+                        <Flex style={boxStyle} justify='flex-end' align='center' >
+                            <Title style={{ margin: 0, marginRight: 15 }} level={5}><b>{user.givenName + " " + user.lastName}</b></Title>
+
+                            <Button onClick={logout} icon={<LogoutOutlined />}>Cerrar Sesión</Button>
                         </Flex>
                     </Flex>
                 </>
             ) : (
                 <>
                     <Flex style={boxStyle} align="start">
-                        <p style={{ width: '200px' }}>Banco Chelo</p>
+                        <Title style={{ marginTop: 10, width: '250px', /*border: '1px solid #40a9ff'*/ }} level={4}><b>Banco Chelo</b></Title>
 
                         <Flex style={boxStyle} justify='flex-end' align='center'>
                             <Button onClick={() => { navigate("/login") }}>Iniciar Sesión</Button>

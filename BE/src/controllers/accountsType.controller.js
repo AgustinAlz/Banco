@@ -3,12 +3,6 @@ import jwt from "jsonwebtoken";
 
 export const getAccountTypes = async (req, res) => {
     try {
-        const { token } = req.cookies;
-        const decodedToken = jwt.decode(token);
-        // Only Admin can create, update and delete accounts
-        if(!decodedToken.role.adminPermission){
-            return res.status(401).json({ message: "Not Authorized." });
-        }
         const accountTypes = await AccountType.find();
         res.json(accountTypes);
     } catch (error) {
@@ -18,12 +12,6 @@ export const getAccountTypes = async (req, res) => {
 
 export const getAccountType = async (req, res) => {
     try {
-        const { token } = req.cookies;
-        const decodedToken = jwt.decode(token);
-        // Only Admin can create, update and delete accounts
-        if(!decodedToken.role.adminPermission){
-            return res.status(401).json({ message: "Not Authorized." });
-        }
         const accountType = await AccountType.findById({ "_id": req.params.id });
         await accountType.populate("role");
         if (!accountType) {

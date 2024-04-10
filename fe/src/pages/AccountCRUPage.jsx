@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import { Alert, Button, Select, Form, Input } from 'antd';
+import { Alert, message, Button, Select, Form, Input, InputNumber } from 'antd';
 import { getAccountTypesRequest } from "../api/accountTypes";
-import { getAccountsRequest, getAccountRequest, createAccountRequest, updateAccountRequest } from "../api/accounts";
+import { getAccountsRequest, getAccountRequest, createAccountRequest, updateAccountRequest, getNextAccountRequest } from "../api/accounts";
 import { getUsersRequest, getUserRequest } from '../api/users';
 import { useAuth } from "../context/authContext";
 import { accountSchema } from "../schemas/account";
@@ -15,81 +15,127 @@ export function AccountCRUPage() {
     const { user } = useAuth();
     const { id } = useParams();
     const { ownerId } = useParams();
+    const [messageApi, contextHolder] = message.useMessage();
+    const formatter = new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2 });
     const [accountTypes, setAccountTypes] = useState([]);
     const [owners, setOwners] = useState([]);
     const [userOwner, setUserOwner] = useState([]);
     const [errors, setErrors] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const navigate = useNavigate();
+    const [form] = Form.useForm();
     const [account, setAccount] = useState({
         _id: "",
         number: "",
         owners: [],
         accountType: "",
-        balance: 0,
+        balance: "0,00",
         editing: false
     });
+    //const [account, setAccount] = useState();
 
-    /*const [state, setState] = useState(async () => {
+    const start = () => {
+        setLoading(true);
+        // ajax request after empty completing
+        setTimeout(() => {
+            setErrors([]);
+            setSelectedRowKeys([]);
+            setLoading(false);
+        }, 1000);
+    };
 
-        const responseAccountOwner = await getUserRequest(ownerId);
-        setUserOwner(responseAccountOwner.data);
-        console.log("Owner", responseAccountOwner.data);
-        //setAccount({ ...account, owners: new Array(responseAccountOwner.data) });
-        //console.log("cuenta", account);
+    const getAccountTypes = async () => {
+        const responseAccountTypes = await getAccountTypesRequest();
+        setAccountTypes(responseAccountTypes.data);
+    };
 
-        const initialState = {
-            _id: "",
-            number: "",
-            owners: responseAccountOwner.data,
-            accountType: "",
-            balance: 0,
-            editing: false
+    const getOwners = async () => {
+        /*const config = { params: { filter: 'regularUsersOnly' } };
+        const responseOwners = await getUsersRequest(config);
+        setOwners(responseOwners.data);*/
+
+        const responseOwners = await getUsersRequest({ params: { filter: 'regularUsersOnly' } })
+        setOwners(responseOwners.data);
+        setAccount({ ...account, owners: responseOwners.data.filter(x => x._id === ownerId) });
+    };
+
+    const getAccount = async (accountId) => {
+        //const responseAccountOwner = await getUserRequest(ownerId);
+        const responseNextAccount = await getNextAccountRequest();
+        if (accountId) {
+            const res = await getAccountRequest(accountId);
+            setAccount({
+                _id: accountId,
+                number: String(res.data.number).padStart(10, '0'),
+                owners: res.data.owners,
+                accountType: res.data.accountType,
+                balance: formatter.format((Math.round(res.data.balance * 100) / 100)),
+                editing: true
+            });
+        } else {
+            setAccount({
+                _id: "",
+                number: String(responseNextAccount.data).padStart(10, '0'),
+                owners: [/*responseAccountOwner.data*/],
+                accountType: "",
+                balance: "0,00",
+                editing: false
+            });
         }
-        console.log("account", initialState)
-        return initialState;
-    });
-
-    console.log("account2", state);*/
-
-    const navigate = useNavigate();
-    const [form] = Form.useForm();
-    //const [form] = Form.useForm({resolver: zodResolver(accountSchema)});
+    };
 
     useEffect(() => {
         async function fetchData() {
-            const responseAccountTypes = await getAccountTypesRequest();
+            const accountId = id;
+
+            getAccountTypes();
+            getOwners();
+            getAccount(accountId);
+
+
+            /*const responseAccountTypes = await getAccountTypesRequest();
             setAccountTypes(responseAccountTypes.data);
-            //const responseOwners = await getRegularUsersRequest();
             const config = { params: { filter: 'regularUsersOnly' } };
             const responseOwners = await getUsersRequest(config);
             setOwners(responseOwners.data);
-            //console.log("owners",responseOwners.data);
-            /*const responseAccountOwner = await getUserRequest(ownerId);
-            setUserOwner(responseAccountOwner.data);
-            setAccount({...account, owners: [userOwner]});*/
 
-            const accountId = id;
-            if (accountId) {
+            //const responseAccountOwner = await getUserRequest(ownerId);
+            //setUserOwner(responseAccountOwner.data);
+            //console.log("filto", responseOwners.data.filter(x => x._id === ownerId));
+            //setAccount({ ...account, owners: responseOwners.data.filter(x => x._id === ownerId) });
+
+            /*setAccount({
+                _id: "",
+                number: "",
+                owners: [responseAccountOwner.data],
+                accountType: "",
+                balance: "0,00",
+                editing: false
+            });*/
+
+
+            /*if (accountId) {
                 const res = await getAccountRequest(accountId);
                 setAccount({
                     _id: accountId,
-                    number: res.data.number,
+                    number: String(res.data.number).padStart(10, '0'),
                     owners: res.data.owners,
                     accountType: res.data.accountType,
-                    balance: res.data.balance,
+                    balance: formatter.format((Math.round(res.data.balance * 100) / 100)),
                     editing: true
                 });
-                //console.log(res.data);
-            }
+            }*/
         }
         fetchData();
         form.resetFields()
     }, [form, account.editing]);
 
-    // console.log("cuenta", account);
-
     const formData = {
         id: 100,
         title: "Event SBMCXNoZPP",
+        ownersId: "",
+        //test: console.log("testteando",account)  
         ownersId: account.owners.map((owner) => owner._id)
     };
 
@@ -116,18 +162,32 @@ export function AccountCRUPage() {
     const onFinish = async (values) => {
         try {
             if (account.editing) {
-                await updateAccountRequest(account);
+
+                await updateAccountRequest({ ...account, balance: 0 });
             } else {
-                await createAccountRequest(account);
+                await createAccountRequest({ ...account, balance: 0 });
             }
-            navigate(`/owner/${ownerId}/accounts/`)
+
+            if (typeof (ownerId) === "undefined") {
+                navigate(`/accounts`);
+            } else {
+                navigate(`/owner/${ownerId}/accounts`);
+            }
         } catch (error) {
-            setErrors(error);
+            //setErrors(error);
+            showError(error);
         }
     };
 
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
+    };
+
+    const showError = (error) => {
+        messageApi.open({
+            type: 'error',
+            content: error.response.data.message,
+        });
     };
 
     const handle_select_account_type = (value, key) => {
@@ -138,18 +198,35 @@ export function AccountCRUPage() {
         setAccount({ ...account, [e.target.name]: e.target.value });
     };
 
+    const handleNumberChange = (value) => {
+        setAccount({ ...account, balance: Math.round(value * 100) / 100 });
+    };
+
+
     const cancel = async () => {
-        navigate(`/owner/${ownerId}/accounts/`);
+        //navigate(`/owner/${ownerId}/accounts`);
+        navigate(-1);
     }
 
     return (
         <>
+            {contextHolder}
+            {/*console.log("cuenta", account)*/}
             <Form layout="vertical" initialValues={formData} form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
                 <Form.Item label="Número de cuenta" name="number" placeholder="Número de cuenta" initialValue={account.number} rules={[
                     {
                         required: true,
+                        pattern: new RegExp(/^[0-9]*$/),
                         message: 'Por favor ingresar número de cuenta.',
                     },
+                    {
+                        min: 10,
+                        message: 'El número de cuenta debe poseer al menos 10 números.'
+                    },
+                    {
+                        max: 10,
+                        message: 'El número de cuenta debe poseer como máximo 10 números.'
+                    }
                 ]}
                 >
                     <Input name="number" onChange={handleChange} />
@@ -204,7 +281,7 @@ export function AccountCRUPage() {
                     },
                 ]}
                 >
-                    <Input name="balance" onChange={handleChange} />
+                    <Input disabled name="balance" onChange={handleNumberChange} style={{ width: "100%" }} />
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit">

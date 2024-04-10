@@ -1,16 +1,18 @@
 import { Router } from "express";
-import { getAccounts, getAccountsByOwner, createAccount, getAccount, updateAccount, deleteAccount } from "../controllers/accounts.controller.js";
-import { auth } from "../middlewares/auth.middleware.js";
+import { getAccounts, getAccountsByOwner, createAccount, getAccount, updateAccount, deleteAccount, getNextAccount } from "../controllers/accounts.controller.js";
+import { auth, authAdmin } from "../middlewares/auth.middleware.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { accountSchema } from "../schemas/account.schema.js";
 
 const router = Router();
 
-router.get("/", auth, getAccounts);
+router.get("/", authAdmin, getAccounts);
+router.get("/nextAccount/", authAdmin, getNextAccount);
 router.get("/owner/:ownerId", auth, getAccountsByOwner);
-router.post("/create", auth, validateSchema(accountSchema), createAccount);
+router.post("/create", authAdmin, validateSchema(accountSchema), createAccount);
 router.get("/:id", auth, getAccount);
-router.put("/:id", auth, updateAccount);
-router.delete("/:id", auth, deleteAccount);
+router.put("/:id", authAdmin, updateAccount);
+router.delete("/:id", authAdmin, deleteAccount);
+
 
 export default router;
